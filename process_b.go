@@ -29,15 +29,15 @@ func main() {
 
 	//Starts a server
 	address := ":" + arguments[1]
-	l, err := net.Listen("tcp", address)
+	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer l.Close()
+	defer listener.Close()
 
 	//Acknowledges connection to process_a
-	c, err := l.Accept()
+	conn, err := listener.Accept()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -45,7 +45,7 @@ func main() {
 
 	for {
 		//Reads message from process_a
-		netData, err := bufio.NewReader(c).ReadString('\n')
+		netData, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -64,6 +64,6 @@ func main() {
 		message := Message{input[0], input[1], currentTime.String(), input[2], input[3]}
 
 		//returns formatted data to process_a
-		c.Write([]byte(fmt.Sprintf("\nTitle: %s\nTo: %s\nFrom: %s\nDate: %s\nContent: %s\t", message.Title, message.To, message.From, message.Date, message.Content)))
+		conn.Write([]byte(fmt.Sprintf("\nTitle: %s\nTo: %s\nFrom: %s\nDate: %s\nContent: %s\t", message.Title, message.To, message.From, message.Date, message.Content)))
 	}
 }
